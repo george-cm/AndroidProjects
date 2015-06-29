@@ -1,5 +1,6 @@
 package com.georgemurga.bladderdiary;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -7,12 +8,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.io.FileOutputStream;
+
 
 public class DisplayMessageActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FileOutputStream outputStream;
 
         // Get the message from the intent
         Intent intent = getIntent();
@@ -22,6 +26,13 @@ public class DisplayMessageActivity extends ActionBarActivity {
         TextView textView = new TextView(this);
         textView.setTextSize(40);
         textView.setText(message);
+        try {
+            outputStream = openFileOutput(getString(R.string.filename), Context.MODE_PRIVATE);
+            outputStream.write(message.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Set the text view as the activity layout
         setContentView(textView);
