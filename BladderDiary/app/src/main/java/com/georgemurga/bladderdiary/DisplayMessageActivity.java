@@ -2,13 +2,18 @@ package com.georgemurga.bladderdiary;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.util.Log;
 
+import java.io.IOException;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 
 public class DisplayMessageActivity extends ActionBarActivity {
@@ -16,7 +21,8 @@ public class DisplayMessageActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FileOutputStream outputStream;
+        //FileOutputStream outputStream;
+        String baseFolder;
 
         // Get the message from the intent
         Intent intent = getIntent();
@@ -26,12 +32,20 @@ public class DisplayMessageActivity extends ActionBarActivity {
         TextView textView = new TextView(this);
         textView.setTextSize(40);
         textView.setText(message);
+
+        File path = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS);
+
+        File file = new File(path, "bladder_diary.csv");
+
         try {
-            outputStream = openFileOutput(getString(R.string.filename), Context.MODE_PRIVATE);
-            outputStream.write(message.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+            // Make sure the downloads directory exists
+            path.mkdirs();
+            OutputStream fos = new FileOutputStream(file);
+            fos.write(message.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            Log.w("ExternalStorage", "Error writing" + file, e);
         }
 
         // Set the text view as the activity layout
