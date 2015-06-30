@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 
 public class DisplayMessageActivity extends ActionBarActivity {
@@ -23,14 +25,14 @@ public class DisplayMessageActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         //FileOutputStream outputStream;
         String baseFolder;
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         // Get the message from the intent
         Intent intent = getIntent();
         String message = intent.getStringExtra(MyActivity.EXTRA_MESSAGE);
 
         // Create the text view
         TextView textView = new TextView(this);
-        textView.setTextSize(40);
+        textView.setTextSize(20);
         textView.setText(message);
 
         File path = Environment.getExternalStoragePublicDirectory(
@@ -41,9 +43,12 @@ public class DisplayMessageActivity extends ActionBarActivity {
         try {
             // Make sure the downloads directory exists
             path.mkdirs();
-            OutputStream fos = new FileOutputStream(file);
-            fos.write(message.getBytes());
+            OutputStream fos = new FileOutputStream(file, true);
+            String currentDateAndTime = sdf.format(Calendar.getInstance().getTime())
+                    + ";1" + System.getProperty("line.separator");
+            fos.write(currentDateAndTime.getBytes());
             fos.close();
+            textView.setText(currentDateAndTime);
         } catch (IOException e) {
             Log.w("ExternalStorage", "Error writing" + file, e);
         }
